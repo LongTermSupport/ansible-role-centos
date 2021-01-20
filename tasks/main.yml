@@ -32,7 +32,7 @@
 
 - name: Basic packages
   become: true
-  yum:
+  package:
     name: "{{ packages }}"
     state: present
   vars:
@@ -42,6 +42,8 @@
       - bash-completion
       - epel-release
       - sudo
+      - python3
+      - policycoreutils-python-utils
 
 - name: Bash Profile
   become: true
