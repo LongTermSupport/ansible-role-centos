@@ -46,11 +46,19 @@ then
         screenPrompt="(screen: ${STY})\n"
     fi
     #Prompt
+    number=$(
+       # get "random" string that depends on hostname
+       md5sum <<<"$HOSTNAME" |
+       # meh - take first byte and convert it to decimal
+       cut -c-2 | xargs -i printf "%d\n" "0x{}" |
+       # convert 0-255 range into 30-37 range
+       awk '{print int($0/255.0*(37-30)+30)}'
+    )
     function redPrompt(){
-        export PS1=${screenPrompt}'\[\e[1m\]${PWD}\[\e[0m\]'"\n\[\033[38;5;1m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;9m\]\h\[$(tput sgr0)\] "
+        export PS1=${screenPrompt}'\[\e[1m\]${PWD}\[\e[0m\]'"\n\[\033[38;5;1m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[\e[$number;1m\]\h\[\e[m\] "
     }
     function bluePrompt(){
-        export PS1=${screenPrompt}'\[\e[1m\]${PWD}\[\e[0m\]'"\n\[\033[38;5;32m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;32m\]\h\[$(tput sgr0)\] "
+        export PS1=${screenPrompt}'\[\e[1m\]${PWD}\[\e[0m\]'"\n\[\033[38;5;32m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[\e[$number;1m\]\h\[\e[m\] "
     }
 
     if [[ "$(whoami)" == "root" ]]
