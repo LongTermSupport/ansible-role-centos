@@ -25,9 +25,11 @@
     timeout: 30
     state: started
 
-- name: Yum Update
+- name: Update installed packages
   become: true
-  command: yum -y update
+  package:
+    name: "*"
+    state: latest
   when: ec_centos_update_packages
 
 - name: Basic packages
@@ -73,9 +75,10 @@
       export LC_ALL
     dest: /etc/profile.d/zz_locale.sh
 
-- name: Timezone
+- name: set Timezone to Europe/London
   become: true
-  command: timedatectl set-timezone Europe/London
+  timezone:
+    name: Europe/London
 
 - name: Passwordless Wheel Sudo
   become: true
@@ -89,6 +92,8 @@
 
 - name: Set hostname to match ansible hostname
   become: true
-  command: hostnamectl set-hostname "{{ inventory_hostname }}"
-
-
+  hostname:
+    name: "{{ inventory_hostname }}"
+  # XXX: defaults to hostnamectl, but that will fail when systemd is not running,
+  # including containers (like docker) that do not run systemd by default
+  ignore_errors: true
