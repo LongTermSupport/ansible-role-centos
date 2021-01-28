@@ -34,5 +34,4 @@ Apache
 
 Author Information
 ------------------
-
-[Edmonds Commerce](https://www.edmondscommerce.co.uk)
+Original version: [Edmonds Commerce](https://www.edmondscommerce.co.uk)
