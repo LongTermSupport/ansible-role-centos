@@ -2,7 +2,7 @@
 # defaults file for edmondscommerce.centos
 
 # Whether a yum update should be run
-ec_centos_update_packages: true
+lts_centos_update_packages: true
 
 # Add passwordless sudo to wheel group
-ec_centos_sudo_wheel: true
+lts_centos_sudo_wheel: true

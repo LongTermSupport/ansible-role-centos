@@ -1,4 +1,12 @@
 ---
+- name: Check Centos Version
+  assert:
+    that:
+      - ansible_os_family == 'RedHat'
+      - ansible_distribution_major_version | int >= 7
+      - ansible_distribution_major_version | int <= 9
+    fail_msg: 'This role supports Centos 7 or 8'
+
 - name: Fastest Mirror Tuning
   become: true
   copy:
@@ -30,7 +38,7 @@
   package:
     name: "*"
     state: latest
-  when: ec_centos_update_packages
+  when: lts_centos_update_packages
 
 - name: Basic packages
   become: true
@@ -45,13 +53,32 @@
       - epel-release
       - sudo
       - python3
+
+- name: Centos 7 Packages
+  become: true
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - policycoreutils-python
+  when: ansible_distribution_major_version | int == 7
+
+- name: Centos 8 Packages
+  become: true
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
       - policycoreutils-python-utils
+  when: ansible_distribution_major_version | int == 8
 
 - name: Bash Profile
   become: true
   copy:
-    src: ./../templates/etc/profile.d/zz_ec.sh
-    dest: /etc/profile.d/zz_ec.sh
+    src: ./../templates/etc/profile.d/zz_lts.sh
+    dest: /etc/profile.d/zz_lts.sh
 
 - name: Vim Config
   become: true
@@ -82,13 +109,13 @@
 
 - name: Passwordless Wheel Sudo
   become: true
-  when: ec_centos_sudo_wheel
   lineinfile:
     path: /etc/sudoers
     state: present
     regexp: "^.+?%wheel"
     line: "%wheel	ALL=(ALL)	NOPASSWD: ALL"
     validate: '/usr/sbin/visudo -cf %s'
+  when: lts_centos_sudo_wheel
 
 - name: Set hostname to match ansible hostname
   become: true
