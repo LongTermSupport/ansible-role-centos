@@ -133,3 +133,12 @@
   # XXX: defaults to hostnamectl, but that will fail when systemd is not running,
   # including containers (like docker) that do not run systemd by default
   ignore_errors: true
+
+  # this is important to avoid PHP ClI delays, otherwise theres a big delay for any PHP CLI call
+- name: Set hosts file entry for hostname to localhost
+  become: true
+  blockinfile:
+    create: yes
+    path: /etc/hosts
+    marker: "# {mark} Hostname to localhost"
+    block: "127.0.0.1 {{ inventory_hostname }}"
